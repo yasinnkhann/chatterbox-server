@@ -68,17 +68,15 @@ var requestHandler = function(request, response) {
 
     statusCode = 201;
     response.writeHead(statusCode, headers);
-    response.end();
-    // request.on('event', (result) => {
-    //   let stringifiedResult = JSON.stringify(result);
-    //   console.log('STRINGIFIED RESULT: ', stringifiedResult);
-    //   body.data.push(stringifiedResult);
 
+    request.on('data', (result) => {
+      let stringifiedResult = result.toString();
 
-    //   response.writeHead(statusCode, headers);
-    //   response.write(JSON.stringify(body.data));
-    //   response.end();
-    // })
+      body.data.push(JSON.parse(stringifiedResult));
+
+      response.write(JSON.stringify(body.data));
+      response.end();
+    })
 
     // console.log(response);
   } else if (request.method === 'OPTIONS' && request.url === '/classes/messages') {
