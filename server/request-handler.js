@@ -60,38 +60,37 @@ var requestHandler = function(request, response) {
 
     statusCode = 200;
     response.writeHead(statusCode, headers);
-    response.write(JSON.stringify(body.data));
-    response.end();
-    // console.log(response);
+    // response.write(JSON.stringify(body.data));
+    response.end(JSON.stringify(body.data));
 
   } else if (request.method === 'POST' && request.url === '/classes/messages') {
 
     statusCode = 201;
     response.writeHead(statusCode, headers);
 
-    request.on('data', (result) => {
-      let stringifiedResult = result.toString();
+    request.on('data', chunk => {
+      let stringifiedChunk = chunk.toString();
 
-      body.data.push(JSON.parse(stringifiedResult));
+      body.data.push(JSON.parse(stringifiedChunk));
 
-      response.write(JSON.stringify(body.data));
-      response.end();
+      // response.write(JSON.stringify(body.data));
     })
 
-    // console.log(response);
+    request.on('end', () => {
+      response.end(JSON.stringify(body.data));
+    })
+
   } else if (request.method === 'OPTIONS' && request.url === '/classes/messages') {
 
     statusCode = 200;
     response.writeHead(statusCode, headers);
-    response.write(JSON.stringify([{ data: 'OPTION success' }]));
     response.end();
     // console.log(response);
 
   } else {
     statusCode = 404;
     response.writeHead(statusCode, headers);
-    response.write(JSON.stringify([{ data: 'Wrong endpoint' }]));
-    response.end();
+    response.end('Wrong Endpoint');
   }
 
   // .writeHead() writes to the request line and headers of the response,
@@ -119,4 +118,4 @@ var requestHandler = function(request, response) {
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
 
-module.exports.handleRequest = requestHandler;
+module.exports.requestHandler = requestHandler;
